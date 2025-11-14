@@ -14,12 +14,12 @@ const Layout = () => {
                     </button>
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li className="nav-item">
+                            {/* <li className="nav-item">
                                 <Link className="nav-link active myNavLink aa" to="/diagrams">BDD</Link>
                             </li>
                             <li className="nav-item">
                                 <Link className="nav-link active myNavLink aa" to="/">SQL Scripts</Link>
-                            </li>
+                            </li> */}
                             {/* <li className="nav-item">
                             <a className="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
                             </li> */}
@@ -35,9 +35,9 @@ const Layout = () => {
                                         <li><Link className="dropdown-item myNavLink" to="/contact">Profile</Link></li>
                                         <li><Link className="dropdown-item myNavLink" to="/">Login</Link></li>
                                         <li><Link className="dropdown-item myNavLink" to="/">Singin</Link></li>
-                                        <li><hr className="dropdown-divider"/></li>
-                                        <li><Link className="dropdown-item myNavLink" to="/">Contact</Link></li>        
-                                        <li><Link className="dropdown-item myNavLink" to="/">About</Link></li>        
+                                        {/* <li><hr className="dropdown-divider"/></li> */}
+                                        {/* <li><Link className="dropdown-item myNavLink" to="/">Contact</Link></li>        
+                                        <li><Link className="dropdown-item myNavLink" to="/">About</Link></li>         */}
                                         <li><hr className="dropdown-divider"/></li>
                                         <li><Link className="dropdown-item myNavLink" to="/">Logout</Link></li>      
                                     </ul>

@@ -7,49 +7,87 @@ const Results = () => {
   const [gameDate, setGameDate] = useState("");
   const [gameName, setGameName] = useState("");
   const [gameId, setGameId] = useState(null);
+  const [tournamentsData, setTournamentsData] = useState([]);
 
   // Helper method to determine the host
   const getHost = () => (auth.DEV ? auth.DEV_URL : auth.PROD_URL);
   const host = getHost();
 
+  // Format date for display
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pl-PL', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
+
   useEffect(() => {
-    // Pobranie ID z URL
+    // Fetch all tournaments
+    const fetchTournaments = async () => {
+      try {
+        const response = await axios.get(`${host}/api/tournaments`);
+        setTournamentsData(response.data.data);
+      } catch (error) {
+        console.error("Error fetching tournaments:", error);
+      }
+    };
+
+    fetchTournaments();
+  }, []);
+
+  useEffect(() => {
+    // Get ID from URL
     const getIdFromUrl = () => {
       const hashParams = new URLSearchParams(window.location.hash.split("?")[1]);
-      return hashParams.get("id") || "1"; // Domyślnie ID = 1, jeśli nie ma w URL
+      return hashParams.get("id");
     };
 
     const id = getIdFromUrl();
-    setGameId(id); // Ustawienie ID w stanie
-
-    const fetchResults = async () => {
-      const path = `${host}/api/result/result/${id}`;
-      console.log("Fetching results from:", path);
-      try {
-        const response = await axios.get(path);
-        if (response.data.data) setMatchData(response.data.data);
-      } catch (error) {
-        console.error("Error fetching results:", error);
-      }
-    };
-
-    const fetchGame = async () => {
-      const path = `${host}/api/result/game/${id}`;
-      console.log("Fetching game from:", path);
-      try {
-        const response = await axios.get(path);
-        if (response.data.data) {
-          setGameName(response.data.data[0].GameName);
-          setGameDate(response.data.data[0].GameDate);
+    
+    if (!id && tournamentsData.length > 0) {
+      // If no ID in URL, use the first tournament
+      const firstTournament = tournamentsData[0];
+      setGameId(firstTournament.Id);
+      setGameName(firstTournament.Name);
+      setGameDate(firstTournament.StartDate);
+      return;
+    }
+    
+    if (id) {
+      setGameId(id);
+      
+      const fetchResults = async () => {
+        try {
+          const response = await axios.get(`${host}/api/result/tournament/${id}`);
+          if (response.data.data) setMatchData(response.data.data);
+        } catch (error) {
+          console.error("Error fetching results:", error);
         }
-      } catch (error) {
-        console.error("Error fetching game:", error);
-      }
-    };
+      };
 
-    fetchResults();
-    fetchGame();
-  }, []);
+      const fetchTournament = async () => {
+        try {
+          const tournament = tournamentsData.find(t => t.Id == id);
+          if (tournament) {
+            setGameName(tournament.Name);
+            setGameDate(tournament.StartDate);
+          }
+        } catch (error) {
+          console.error("Error fetching tournament:", error);
+        }
+      };
+
+      fetchResults();
+      fetchTournament();
+    }
+  }, [tournamentsData, host]);
+
+  const handleTournamentChange = (e) => {
+    const selectedId = e.target.value;
+    if (selectedId) {
+      window.location.hash = `#/results?id=${selectedId}`;
+      window.location.reload();
+    }
+  };
 
   const calculateStandings = (matches) => {
     const teams = {};
@@ -94,68 +132,96 @@ const Results = () => {
     ).length;
 };
   return (
-    <div className="p-4 result resF">
+    <div className="p-2 sm:p-4 result resF max-w-6xl mx-auto ">
       
-      <h1 className="text-xl font-bold mb-4 text-center">{gameName}<img src="pogon.png" width="50" alt="Pogon" /></h1>
-      <h3 className="text-center">{gameDate}</h3>
-      <h2 className="text-xl font-bold mb-4 text-center">Tabela</h2>
-      
-      {/* Tabela Ligowa - Standings */}
-      <div className="table-responsive resTable">
-        <table className="table table-bordered tDark">
-          <thead className="thead-dark tHead">
-            <tr>
-              <th className="text-center">#</th>
-              <th className="text-center">Drużyna</th>
-              <th className="text-center">Punkty</th>
-              <th className="text-center">Mecze</th>
-              <th className="text-center">B. Strzelone</th>
-              <th className="text-center">B. Stracone</th>
-              <th className="text-center">B. Bilans</th>
-            </tr>
-          </thead>
-          <tbody>
-            {calculateStandings(matchData).map((team, index) => (
-              <tr key={team.name}>
-                <td className="text-center">{index + 1}</td>
-                <td>{team.name}</td>
-                <td className="text-center">{team.points}</td>
-                <td className="text-center">{getTeamMatchesCount(matchData, team.name)}</td>
-                <td className="text-center">{team.goalsFor}</td>
-                <td className="text-center">{team.goalsAgainst}</td>
-                <td className="text-center">{team.goalDifference}</td>
-              </tr>
+      {/* Tournament Selector */}
+      <div className="mb-6 text-center">
+        <label className="block text-lg font-bold mb-3">Wybierz Turniej:</label>
+        <select
+          value={gameId || ""}
+          onChange={handleTournamentChange}
+          className="border p-3 rounded w-full text-base"
+        >
+          <option value="">Wybierz turniej...</option>
+          {tournamentsData
+            .filter((game) => game.Name !== "undefined")
+            .map((game) => (
+              <option key={game.Id} value={game.Id}>
+                {formatDate(game.StartDate)} - {game.Name}
+              </option>
             ))}
-          </tbody>
-        </table>
+        </select>
       </div>
 
-      {/* Tabela wyników meczów */}
-      <h2 className="text-xl font-bold mt-6 mb-4 text-center">Wyniki Meczów</h2>
-      <div className="table-responsive resTable">
-        <table className="table table-bordered tDark">
-          <thead className="thead-light tHead">
-            <tr>
-              <th className="text-center">#</th>
-              <th className="text-center">Mecz</th>
-              <th className="text-center">Wynik</th>
-              <th className="text-center">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {matchData
-              .sort((a, b) => b.Id - a.Id) // Sortowanie od najwyższego ID do najniższego
-              .map(({ Id, Team1, Team2, Result1, Result2, Status }) => (                
-                <tr key={Id}>
-                  <td className="text-center">{`${Order}`}</td>
-                  <td className="text-center">{`${Team1} - ${Team2}`}</td>
-                  <td className="text-center">{`${Result1 == null ? "-": Result1} - ${Result2 == null ? "-" : Result2}`}</td>
-                  <td className="text-center">{`${Status == "N" ? "Zaplanowany": Status == "Z"? "Zakończony" : "W trakcie"}`}</td>
+      {gameId && (
+        <>
+          <h1 className="text-xl sm:text-2xl font-bold mb-4 text-center">{gameName}<img src="pogon.png" width="50" alt="Pogon" className="inline-block ml-2" /></h1>
+          <h3 className="text-center text-base sm:text-lg mb-6">{formatDate(gameDate)}</h3>
+          <h2 className="text-xl font-bold mb-4 text-center">Tabela</h2>
+          
+          {/* Tabela Ligowa - Standings */}
+          <div className="overflow-x-auto mb-6">
+            <table className="min-w-full table-auto border-collapse text-xs sm:text-sm mx-auto bg-white">
+              <thead style={{backgroundColor: '#dc2626', color: 'white'}}>
+                <tr>
+                  <th className="border border-gray-300 p-2" style={{backgroundColor: '#dc2626', color: 'white'}}>#</th>
+                  <th className="border border-gray-300 p-2" style={{backgroundColor: '#dc2626', color: 'white'}}>Drużyna</th>
+                  <th className="border border-gray-300 p-2" style={{backgroundColor: '#dc2626', color: 'white'}}>Pkt</th>
+                  <th className="border border-gray-300 p-2" style={{backgroundColor: '#dc2626', color: 'white'}}>M</th>
+                  <th className="border border-gray-300 p-2 hidden sm:table-cell" style={{backgroundColor: '#dc2626', color: 'white'}}>Bramki +</th>
+                  <th className="border border-gray-300 p-2 hidden sm:table-cell" style={{backgroundColor: '#dc2626', color: 'white'}}>Bramki -</th>
+                  <th className="border border-gray-300 p-2" style={{backgroundColor: '#dc2626', color: 'white'}}>Bilans</th>
                 </tr>
-              ))}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody className="bg-white text-black">
+                {calculateStandings(matchData).map((team, index) => (
+                  <tr key={team.name} className="hover:bg-gray-100">
+                    <td className="border border-gray-300 p-2 text-center font-bold">{index + 1}</td>
+                    <td className="border border-gray-300 p-2">{team.name}</td>
+                    <td className="border border-gray-300 p-2 text-center font-bold">{team.points}</td>
+                    <td className="border border-gray-300 p-2 text-center">{getTeamMatchesCount(matchData, team.name)}</td>
+                    <td className="border border-gray-300 p-2 text-center hidden sm:table-cell">{team.goalsFor}</td>
+                    <td className="border border-gray-300 p-2 text-center hidden sm:table-cell">{team.goalsAgainst}</td>
+                    <td className="border border-gray-300 p-2 text-center">{team.goalDifference > 0 ? '+' : ''}{team.goalDifference}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Tabela wyników meczów */}
+          <br></br>
+          <h2 className="text-xl font-bold mt-6 mb-4 text-center">Mecze</h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto border-collapse text-xs sm:text-sm mx-auto bg-white">
+              <thead style={{backgroundColor: '#dc2626', color: 'white'}}>
+                <tr>
+                  <th className="border border-gray-300 p-2" style={{backgroundColor: '#dc2626', color: 'white'}}>#</th>
+                  <th className="border border-gray-300 p-2" style={{backgroundColor: '#dc2626', color: 'white'}}>Mecz</th>
+                  <th className="border border-gray-300 p-2" style={{backgroundColor: '#dc2626', color: 'white'}}>Wynik</th>
+                  <th className="border border-gray-300 p-2" style={{backgroundColor: '#dc2626', color: 'white'}}>Status</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white text-black">
+                {matchData
+                  .sort((a, b) => a.Id - b.Id)
+                  .map(({ Id, Team1, Team2, Result1, Result2, Status }, index) => (                
+                    <tr key={Id} className="hover:bg-gray-100">
+                      <td className="border border-gray-300 p-2 text-center">{index + 1}</td>
+                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">{`${Team1} - ${Team2}`}</td>
+                      <td className="border border-gray-300 p-2 text-center font-bold">{`${Result1 == null ? "-": Result1} - ${Result2 == null ? "-" : Result2}`}</td>
+                      <td className="border border-gray-300 p-2 text-center text-xs">
+                        <span className={`px-2 py-1 rounded ${Status === "N" ? "bg-yellow-200 text-black" : Status === "Z" ? "bg-green-200 text-black" : "bg-blue-200 text-black"}`}>
+                          {Status === "N" ? "Zaplanowany" : Status === "Z" ? "Zakończony" : "W trakcie"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
     </div>
   );
 };

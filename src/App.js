@@ -84,17 +84,13 @@ function App() {
       <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
-            <Route path="contact" element={<Contact />} />
-            <Route path="diagrams" element={<Diagrams />} />
+           
             {/* Other routes with layout and menu */}
             {sessionData?.logged && (
-              <>
-                <Route path="sqlscripts" element={<SqlScripts />} />
-                <Route path="sqlallscripts" element={<SqlAllScripts />} />
-                <Route path="3dprints" element={<ThreeDeePrints />} />
+              <>              
                 
                 <Route path="users/change" element={<Change />} />
-                {(sessionData.login === "KM" || sessionData.login === "Admin") && (
+                {(sessionData.login === "KM" || sessionData.login === "admin") && (
                 <>
                   <Route path="resultsAdmin" element={<ResultsAdmin />} />
                   

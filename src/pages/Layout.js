@@ -100,17 +100,17 @@ const Layout = (props) => {
         <header>
           <div className="navbar">
             <div className="logo">
-              <Link to="/">JB</Link>
+              <Link to="/">Pogoń</Link>
             </div>
             <ul className="links">
-              <li><Link onClick={handleToggleMenu3} to="/">Home</Link></li>
+              <li><Link onClick={handleToggleMenu3} to="/">Strona domowa</Link></li>
               {/* <li><Link onClick={handleToggleMenu3} to="/results">Wyniki</Link></li> */}              
-              <li><Link onClick={handleToggleMenu3} to="/diagrams">BDD</Link></li>
-              <li><Link onClick={handleToggleMenu3} to="/sqlscripts">SqlScripts</Link></li>
+              {/* <li><Link onClick={handleToggleMenu3} to="/diagrams">BDD</Link></li>
+              <li><Link onClick={handleToggleMenu3} to="/sqlscripts">SqlScripts</Link></li> */}
               {/* <li><Link onClick={handleToggleMenu3} to="/sqlallscripts">SqlAllScripts</Link></li> */}
-              <li><Link onClick={handleToggleMenu3} to="/3dprints">3d</Link></li>
-              <li><Link onClick={handleToggleMenu3} to="/resultsAdmin">Results</Link></li>
-              <li><Link onClick={handleToggleMenu3} to="/contact">Contact</Link></li>
+              {/* <li><Link onClick={handleToggleMenu3} to="/3dprints">3d</Link></li> */}
+              <li><Link onClick={handleToggleMenu3} to="/resultsAdmin">Pogoń</Link></li>
+              {/* <li><Link onClick={handleToggleMenu3} to="/contact">Contact</Link></li> */}
             </ul>
             {logged && (
               <>

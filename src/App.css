@@ -2,19 +2,24 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family:'Courier New', Courier, monospace
+    font-family:'Lato';
+    font-size: 1rem;
+    font-weight: 300;
 }
 
 body{
     height: 100vh;
     /* background-image: linear-gradient(to right,  #2e3235, #042933); */
-    background-image: url('./images/abstract.jpg');
+    background-color: #01060a;
     background-size: cover;
     background-position: cover;
 }
 ::selection{
     background: #000;
     color: #fff
+}
+.hh{
+    width: 40%;
 }
 
 /* COOKIES */
@@ -54,14 +59,13 @@ body{
     transition: all .2s;
 }
 .cook_btn{
-    background-color: orange;
+    background-color: rgb(255, 38, 0);
     color: #fff;
     padding: 0.5rem 1rem;
     border: none;
     outline: none;
     border-radius: 20px;
-    font-size: 1.2rem;
-    font-weight: bold;
+    font-size: 1rem;
     cursor: pointer;
     margin-left: 10px;
     margin-right: 10px;
@@ -83,7 +87,7 @@ a {
 }
 
 a:hover{
-    color: orange;
+    color:rgb(255, 38, 0);
 }
 /* HEADER */
 header{
@@ -92,6 +96,8 @@ header{
     top: 0;
     background-color: #000;
     background-image: linear-gradient(to top, #01060a, #042933);
+    max-width: 60%;
+    margin: auto;
 }
 
 .navbar{
@@ -126,7 +132,7 @@ header{
 }
 
 .action_btn{
-    background-color: orange;
+    background-color: rgb(255, 38, 0);
     color: #fff;
     padding: 0.5rem 1rem;
     border: none;
@@ -147,7 +153,7 @@ header{
 }
 
 .action_btn2{
-    background-color: orange; 
+    background-color: rgb(255, 38, 0); 
     color: #000000;
     padding: 0.7rem 1rem;
     border: none;
@@ -170,12 +176,12 @@ header{
 
 .action_btn_open{
     border-radius: 20px;
-    background-color: #ffa500;
+    background-color: #rgb(255, 38, 0);
     padding: 0.5rem 1rem;
 }
 .action_btn_open:hover{
     scale:1.05;
-    background-color: orange;    
+    background-color: rgb(255, 38, 0);    
     color: #fff;
   }
 
@@ -348,6 +354,7 @@ header{
     color: #fff;
     background-color: rgba(148, 148, 147, 0.671);
     text-align: center;
+    max-width: 60%;
    
 }
 
@@ -865,5 +872,13 @@ header{
         
         max-width: 100%;
     }
-    
+    .hh{
+        width: 50%;
+    }
+    header{
+        max-width: 100vh;
+    }
+    .main_content{
+        max-width: 100vh;
+    }
 }
