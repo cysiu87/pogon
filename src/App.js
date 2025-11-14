@@ -90,12 +90,12 @@ function App() {
               <>              
                 
                 <Route path="users/change" element={<Change />} />
-                {(sessionData.login === "KM" || sessionData.login === "admin") && (
+                
                 <>
                   <Route path="resultsAdmin" element={<ResultsAdmin />} />
                   
                 </>
-              )}                
+                             
               </>
             )}
             <Route path="users/reset" element={<Reset />} />
