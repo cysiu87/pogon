@@ -1,6 +1,6 @@
 import React, { useState, useRef, useContext } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import axios from "../axiosConfig";
 import Cookies from "js-cookie";
 import { SessionContext } from "../App";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
@@ -33,17 +33,8 @@ const Users = (props) => {
     event.preventDefault();
     const email = loginForm.current.email.value;
     const password = loginForm.current.password.value;
-    const Busername = auth.BASIC_AUTH_USERNAME
-    const Bpassword = auth.BASIC_AUTH_PASSWORD
-    const token = btoa(`${Busername}:${Bpassword}`); // Encode credentials
     axios
-      .post(host+"/api/users/login", { email, password },
-        {
-          headers: {
-            Authorization: `Basic ${token}`,
-          },
-        }
-      )
+      .post("/api/users/login", { email, password })
       .then((response) => {
         const status = response?.data?.data?.status;
         // Set response message and class based on login success

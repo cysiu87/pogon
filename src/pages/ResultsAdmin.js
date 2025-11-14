@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import auth from "../env";
 
 const Results = () => {
@@ -28,7 +28,7 @@ const Results = () => {
 // Fetch DATA SECTION
 const fetchTournaments = async () => {
   try {
-    const response = await axios.get(`${host}/api/tournaments`);
+    const response = await axios.get('/api/tournaments');
     setTournamentsData(response.data.data);
   } catch (error) {
     console.error("Error fetching tournaments data:", error);
@@ -39,7 +39,7 @@ const fetchTeams = async () => {
   if (!tournament.gameId) return;
   
   try {
-    const response = await axios.get(`${host}/api/result/teams/tournament/${tournament.gameId}`);
+    const response = await axios.get(`/api/result/teams/tournament/${tournament.gameId}`);
     if (response.data.data) setTeamData(response.data.data);
   } catch (error) {
     console.error("Error fetching teams:", error);
@@ -50,7 +50,7 @@ const fetchResults = async () => {
   if (!tournament.gameId) return;
   
   try {
-    const response = await axios.get(`${host}/api/result/tournament/${tournament.gameId}`);
+    const response = await axios.get(`/api/result/tournament/${tournament.gameId}`);
     setMatchData(response.data.data);
   } catch (error) {
     console.error("Error fetching match results:", error);
@@ -86,7 +86,7 @@ const handleAddTournament = async () => {
   if (!newTournament.gameName || !newTournament.gameDate) return;
   
   try {
-    await axios.post(`${host}/api/tournaments`, {
+    await axios.post('/api/tournaments', {
       name: newTournament.gameName,
       startDate: newTournament.gameDate,
       status: 'active'
@@ -102,7 +102,7 @@ const handleEditTournament = async () => {
   if (!editingTournament) return;
   
   try {
-    await axios.put(`${host}/api/tournaments/${editingTournament.id}`, {
+    await axios.put(`/api/tournaments/${editingTournament.id}`, {
       name: editingTournament.gameName,
       startDate: editingTournament.gameDate,
       status: 'active'
@@ -118,7 +118,7 @@ const handleDeleteTournament = async (id) => {
   if (!window.confirm("Czy na pewno chcesz usunąć ten turniej? Usunięte zostaną również wszystkie mecze i drużyny!")) return;
   
   try {
-    await axios.delete(`${host}/api/tournaments/${id}`);
+    await axios.delete(`/api/tournaments/${id}`);
     if (tournament.gameId == id) {
       setTournament({ gameName: "", gameDate: "", gameId: null });
     }
@@ -215,7 +215,7 @@ const handleTournamentInputChange = (e) => {
       tournamentId: tournament.gameId
     };
     try {
-      await axios.post(`${host}/api/result`, newMatchData);
+      await axios.post('/api/result', newMatchData);
 
       setNewMatch({ team1: "", team2: "", result1: "", result2: "", status:"N" }); // Clear form
       fetchResults(); // Refresh results
@@ -236,7 +236,7 @@ const handleTournamentInputChange = (e) => {
       tournamentId: tournament.gameId
     };
     try {
-      await axios.put(`${host}/api/result`, updatedMatchData);
+      await axios.put('/api/result', updatedMatchData);
       setEditingMatch(null); // Clear editing state
       fetchResults(); // Refresh results
     } catch (error) {
@@ -247,7 +247,7 @@ const handleTournamentInputChange = (e) => {
   // Delete match
   const handleDeleteMatch = async (id) => {
     try {
-      await axios.delete(`${host}/api/result/${id}`);
+      await axios.delete(`/api/result/${id}`);
       fetchResults(); // Refresh results
     } catch (error) {
       console.error("Error deleting match:", error);
@@ -265,7 +265,7 @@ const handleTournamentInputChange = (e) => {
   // Delete team
   const handleDeleteTeam = async (teamId) => {
     try {
-      await axios.delete(`${host}/api/result/teams/${teamId}`);
+      await axios.delete(`/api/result/teams/${teamId}`);
       fetchTeams(); // Refresh teams
     } catch (error) {
       console.error("Error deleting team:", error);
@@ -285,7 +285,7 @@ const handleTournamentInputChange = (e) => {
     };
 
     try {
-      await axios.post(`${host}/api/result/teams`, newTeamData);
+      await axios.post('/api/result/teams', newTeamData);
       setNewTeamName(""); // Clear the input field
       fetchTeams(); // Refresh teams after adding
     } catch (error) {
@@ -355,7 +355,7 @@ const handleTournamentInputChange = (e) => {
       // Send all matches to backend
       await Promise.all(
         matches.map(match => 
-          axios.post(`${host}/api/result`, {
+          axios.post('/api/result', {
             ...match,
             result1: 0,
             result2: 0,

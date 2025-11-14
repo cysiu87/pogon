@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import auth from "../env";
 
 const Results = () => {
@@ -24,7 +24,7 @@ const Results = () => {
     // Fetch all tournaments
     const fetchTournaments = async () => {
       try {
-        const response = await axios.get(`${host}/api/tournaments`);
+        const response = await axios.get('/api/tournaments');
         setTournamentsData(response.data.data);
       } catch (error) {
         console.error("Error fetching tournaments:", error);
@@ -57,7 +57,7 @@ const Results = () => {
       
       const fetchResults = async () => {
         try {
-          const response = await axios.get(`${host}/api/result/tournament/${id}`);
+          const response = await axios.get(`/api/result/tournament/${id}`);
           if (response.data.data) setMatchData(response.data.data);
         } catch (error) {
           console.error("Error fetching results:", error);
